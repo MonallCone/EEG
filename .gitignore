@@ -97,6 +97,12 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
-EEG_Game/Library
-EEG_Game/Temp
-EEG_Game/UserSettings
+EEG_Game_ComptempTech/Library
+EEG_Game_ComptempTech/Temp
+EEG_Game_ComptempTech/UserSettings
+EEG_Game_ContempTech/UserSettings
+EEG_Game_ContempTech/Temp
+EEG_Game_ContempTech/Library
+EEG_Game_ContempTech/.vscode
+EEG_Game_ContempTech/Packages
+EEG_Game_ContempTech/ProjectSettings
