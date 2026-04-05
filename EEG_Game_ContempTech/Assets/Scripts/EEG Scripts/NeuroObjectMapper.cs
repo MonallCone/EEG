@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.Events;
 
 // Creates a custom Unity Event that can pass a float value (the brain data) to other components.
@@ -69,6 +70,8 @@ public class NeuroObjectMapper : MonoBehaviour
     [Tooltip("Link the brain signal to ANY component here (e.g., Light intensity, Audio volume, UI Sliders).")]
     public NeuroFloatEvent onUpdate;
 
+    public Inspectable inspect;
+
     void Update()
     {
         // Guard: Do nothing if the manager isn't connected
@@ -135,19 +138,21 @@ public class NeuroObjectMapper : MonoBehaviour
      */
     private void ProcessTransformMapping(float val)
     {
-        // Get the current state of the object
-        Vector3 current = (mode == MappingMode.Scale) ? targetTransform.localScale :
-                         (mode == MappingMode.Position) ? targetTransform.localPosition :
-                          targetTransform.localEulerAngles;
+        if(inspect.isInspecting){
+            // Get the current state of the object
+            Vector3 current = (mode == MappingMode.Scale) ? targetTransform.localScale :
+                            (mode == MappingMode.Position) ? targetTransform.localPosition :
+                            targetTransform.localEulerAngles;
 
-        // Interpolate (Lerp) towards the new value for smooth, organic visual feedback
-        if (x) current.x = Mathf.Lerp(current.x, val, Time.deltaTime * smoothSpeed);
-        if (y) current.y = Mathf.Lerp(current.y, val, Time.deltaTime * smoothSpeed);
-        if (z) current.z = Mathf.Lerp(current.z, val, Time.deltaTime * smoothSpeed);
+            // Interpolate (Lerp) towards the new value for smooth, organic visual feedback
+            if (x) current.x = Mathf.Lerp(current.x, val, Time.deltaTime * smoothSpeed);
+            if (y) current.y = Mathf.Lerp(current.y, val, Time.deltaTime * smoothSpeed);
+            if (z) current.z = Mathf.Lerp(current.z, val, Time.deltaTime * smoothSpeed);
 
-        // Apply the newly calculated Vector3 back to the object
-        if (mode == MappingMode.Scale) targetTransform.localScale = current;
-        else if (mode == MappingMode.Position) targetTransform.localPosition = current;
-        else if (mode == MappingMode.Rotation) targetTransform.localEulerAngles = current;
+            // Apply the newly calculated Vector3 back to the object
+            if (mode == MappingMode.Scale) targetTransform.localScale = current;
+            else if (mode == MappingMode.Position) targetTransform.localPosition = current;
+            else if (mode == MappingMode.Rotation) targetTransform.localEulerAngles = current;
+        }
     }
 }
