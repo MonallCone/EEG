@@ -10311,7 +10311,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2877801514165133669, guid: e771b51f1495c2546a72d935e3ae7f96, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.15
+      value: 41.6
       objectReference: {fileID: 0}
     - target: {fileID: 2877801514165133669, guid: e771b51f1495c2546a72d935e3ae7f96, type: 3}
       propertyPath: m_LocalPosition.y
@@ -10319,7 +10319,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2877801514165133669, guid: e771b51f1495c2546a72d935e3ae7f96, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10.82
+      value: 19.1
       objectReference: {fileID: 0}
     - target: {fileID: 2877801514165133669, guid: e771b51f1495c2546a72d935e3ae7f96, type: 3}
       propertyPath: m_LocalRotation.w
@@ -17897,12 +17897,28 @@ PrefabInstance:
       value: NeuroManager
       objectReference: {fileID: 0}
     - target: {fileID: 2284657804521436347, guid: efff90072a21afb4e87ff20e1977a2a1, type: 3}
+      propertyPath: simBeta
+      value: 111.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2284657804521436347, guid: efff90072a21afb4e87ff20e1977a2a1, type: 3}
       propertyPath: simPull
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2284657804521436347, guid: efff90072a21afb4e87ff20e1977a2a1, type: 3}
+      propertyPath: simAlpha
+      value: 93.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2284657804521436347, guid: efff90072a21afb4e87ff20e1977a2a1, type: 3}
+      propertyPath: simDelta
+      value: 76.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2284657804521436347, guid: efff90072a21afb4e87ff20e1977a2a1, type: 3}
+      propertyPath: simTheta
+      value: 38.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2284657804521436347, guid: efff90072a21afb4e87ff20e1977a2a1, type: 3}
       propertyPath: simStress
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -52,22 +52,21 @@ public class UriGellerMovement : MonoBehaviour
                 break;
 
             case State.Chase:
-                Chase();
+                Chase(); //debug
                 break;
         }
     }
 
     void Patrol()
     {
-        if(currentPath == null || currentPath.Length == 0) return;
+        if (currentPath == null || currentPath.Length == 0) return;
 
         agent.SetDestination(currentPath[currentPathIndex].position);
 
-        float distance = Vector3.Distance(transform.position, currentPath[currentPathIndex].position);
-
-        if(distance > 3)
+        // Check if agent reached destination properly
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
-            currentPathIndex++;
+            currentPathIndex = (currentPathIndex + 1) % currentPath.Length;
         }
     }
 
