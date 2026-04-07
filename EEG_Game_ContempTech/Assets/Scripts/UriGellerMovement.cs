@@ -27,7 +27,6 @@ public class UriGellerMovement : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-
         currentPath = pathA;
     }
 

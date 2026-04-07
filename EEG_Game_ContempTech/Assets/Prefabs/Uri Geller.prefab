@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2877801514165133669}
-  - component: {fileID: 6605837314286386364}
   m_Layer: 0
   m_Name: Uri Geller
   m_TagString: Untagged
@@ -33,23 +32,6 @@ Transform:
   - {fileID: 2135544452245008015}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6605837314286386364
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4731941311620924933}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e1856693fa65044faf0b96bf5879ef9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  wanderRadius: 10
-  wanderDelay: 3
-  visionDistance: 10
-  fov: 90
 --- !u!1 &4747730508808805785
 GameObject:
   m_ObjectHideFlags: 0
