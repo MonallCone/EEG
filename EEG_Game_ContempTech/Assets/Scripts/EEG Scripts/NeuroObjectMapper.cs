@@ -1,5 +1,4 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 // Creates a custom Unity Event that can pass a float value (the brain data) to other components.
