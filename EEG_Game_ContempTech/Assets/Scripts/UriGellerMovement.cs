@@ -52,7 +52,7 @@ public class UriGellerMovement : MonoBehaviour
                 break;
 
             case State.Chase:
-                Chase(); //debug
+                Chase();
                 break;
         }
     }
