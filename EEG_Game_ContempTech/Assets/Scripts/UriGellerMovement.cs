@@ -7,7 +7,7 @@ public class UriGellerMovement : MonoBehaviour
     public Transform player;
 
     [Header("Vision")]
-    public float visionDistance = 10f;
+    public float visionDistance = 50f;
     public float fov = 90f;
 
     [Header("Patrol Paths")]

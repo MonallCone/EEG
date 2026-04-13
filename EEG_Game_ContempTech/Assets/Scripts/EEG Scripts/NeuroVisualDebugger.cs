@@ -67,6 +67,6 @@ public class NeuroVisualDebugger : MonoBehaviour
         if (thetaSlider != null) thetaSlider.value = Mathf.Lerp(thetaSlider.value, theta, Time.deltaTime * uiSmoothing);
         if (alphaSlider != null) alphaSlider.value = Mathf.Lerp(alphaSlider.value, alpha, Time.deltaTime * uiSmoothing);
         if (betaSlider != null) betaSlider.value = Mathf.Lerp(betaSlider.value, beta, Time.deltaTime * uiSmoothing);
-        if (stressSlider != null) stressSlider.value = Mathf.Lerp(stressSlider.value, stress, Time.deltaTime * uiSmoothing);
+        if (stressSlider != null) stressSlider.value = Mathf.Lerp(stressSlider.value, stress*100, Time.deltaTime * uiSmoothing);
     }
 }
