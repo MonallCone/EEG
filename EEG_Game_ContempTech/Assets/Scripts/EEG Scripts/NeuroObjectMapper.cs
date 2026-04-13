@@ -48,7 +48,7 @@ public class NeuroObjectMapper : MonoBehaviour
     [Header("--- 4. TRANSFORM MAPPING (Movement) ---")]
     [Tooltip("The object you want to move/scale/rotate. Usually this same GameObject.")]
     public Transform targetTransform;
-    public enum MappingMode { None, Scale, Position, Rotation }
+    public enum MappingMode { None, Scale, Position, Rotation, Animation }
     public MappingMode mode = MappingMode.None;
     public bool x, y, z;
 
@@ -70,6 +70,8 @@ public class NeuroObjectMapper : MonoBehaviour
     public NeuroFloatEvent onUpdate;
 
     public Inspectable inspect;
+
+    private Animator anim;
 
     void Update()
     {
@@ -143,15 +145,22 @@ public class NeuroObjectMapper : MonoBehaviour
                             (mode == MappingMode.Position) ? targetTransform.localPosition :
                             targetTransform.localEulerAngles;
 
-            // Interpolate (Lerp) towards the new value for smooth, organic visual feedback
-            if (x) current.x = Mathf.Lerp(current.x, val, Time.deltaTime * smoothSpeed);
-            if (y) current.y = Mathf.Lerp(current.y, val, Time.deltaTime * smoothSpeed);
-            if (z) current.z = Mathf.Lerp(current.z, val, Time.deltaTime * smoothSpeed);
+            if(mode == MappingMode.Animation && inspect.isInspecting)
+            {
+                anim = GetComponent<Animator>();
+                anim.Play("TEST_DELETE", -1, current.x);
+            }
+            else{
+                // Interpolate (Lerp) towards the new value for smooth, organic visual feedback
+                if (x) current.x = Mathf.Lerp(current.x, val, Time.deltaTime * smoothSpeed);
+                if (y) current.y = Mathf.Lerp(current.y, val, Time.deltaTime * smoothSpeed);
+                if (z) current.z = Mathf.Lerp(current.z, val, Time.deltaTime * smoothSpeed);
 
-            // Apply the newly calculated Vector3 back to the object
-            if (mode == MappingMode.Scale) targetTransform.localScale = current;
-            else if (mode == MappingMode.Position) targetTransform.localPosition = current;
-            else if (mode == MappingMode.Rotation) targetTransform.localEulerAngles = current;
+                // Apply the newly calculated Vector3 back to the object
+                if (mode == MappingMode.Scale) targetTransform.localScale = current;
+                else if (mode == MappingMode.Position) targetTransform.localPosition = current;
+                else if (mode == MappingMode.Rotation) targetTransform.localEulerAngles = current;
+            }
         }
     }
 }
