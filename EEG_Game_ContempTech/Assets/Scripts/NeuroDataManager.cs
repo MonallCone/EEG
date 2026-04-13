@@ -3,14 +3,45 @@ using EmotivUnityPlugin;
 using System.Collections;
 
 /*
- * SCRIPT: NeuroDataManager (The Data Hub)
- * PURPOSE: This is the engine room. It safely extracts raw data from the headset 
- * and provides it to your game objects. 
- * DESIGNER NOTE: You do NOT need to edit this script. Just attach it to your NeuroManager object.
+ * SCRIPT: NeuroDataManager (The Data Hub & Simulator)
+ * PURPOSE: Extracts real data from the headset, OR generates fake data for testing.
+ * DESIGNER NOTE: Turn on "Simulation Mode" to test your game at home without a headset!
  */
 public class NeuroDataManager : MonoBehaviour
 {
-    // Safe storage for our background data streams
+    [Header("--- SIMULATION MODE (No Headset Needed) ---")]
+    [Tooltip("Check this box to disconnect from Emotiv and use the sliders below to fake brain data.")]
+    public bool simulationMode = false;
+
+    [Header("1. Fake Performance Metrics")]
+    [Range(0f, 1f)] public float simAttention = 0f;
+    [Range(0f, 1f)] public float simRelaxation = 0f;
+    [Range(0f, 1f)] public float simStress = 0f;
+
+    [Header("2. Fake Facial Expressions")]
+    [Range(0f, 1f)] public float simBlink = 0f;
+    [Range(0f, 1f)] public float simSmile = 0f;
+    [Range(0f, 1f)] public float simClench = 0f;
+    [Range(0f, 1f)] public float simSurprise = 0f;
+    [Range(0f, 1f)] public float simFrown = 0f;
+
+    [Header("3. Fake Mental Commands")]
+    [Range(0f, 1f)] public float simPush = 0f;
+    [Range(0f, 1f)] public float simPull = 0f;
+    [Range(0f, 1f)] public float simLift = 0f;
+    [Range(0f, 1f)] public float simDrop = 0f;
+    [Range(0f, 1f)] public float simLeft = 0f;
+    [Range(0f, 1f)] public float simRight = 0f;
+    [Range(0f, 1f)] public float simUp = 0f;
+    [Range(0f, 1f)] public float simDown = 0f;
+
+    [Header("4. Fake Raw Band Power")]
+    [Range(0f, 150f)] public float simAlpha = 20f;
+    [Range(0f, 150f)] public float simTheta = 15f;
+    [Range(0f, 150f)] public float simBeta = 10f;
+    [Range(0f, 150f)] public float simDelta = 5f;
+
+    // --- REAL DATA STORAGE ---
     private float _latestRelaxation = 0f;
     private float _latestFocus = 0f;
     private float _latestStress = 0f;
@@ -18,40 +49,77 @@ public class NeuroDataManager : MonoBehaviour
 
     void Start()
     {
-        // Listen to the live data feeds as soon as the game starts
         DataStreamProcess.Instance.BandPowerDataReceived += OnRawBandPowerReceived;
         DataStreamProcess.Instance.PerfDataReceived += OnRawPerformanceDataReceived;
     }
 
     void OnDestroy()
     {
-        // Clean up listeners when the game stops to prevent memory leaks
         DataStreamProcess.Instance.BandPowerDataReceived -= OnRawBandPowerReceived;
         DataStreamProcess.Instance.PerfDataReceived -= OnRawPerformanceDataReceived;
     }
 
-    /*
-     * MASTER FUNCTION: GetValueFromBypass
-     * Other scripts (like NeuroObjectMapper) call this to get the current brain value.
-     */
     public float GetValueFromBypass(BrainDataCategory category, string signalName, int sensorIndex = 0)
     {
+        string query = signalName.ToLower();
+
+        // ==========================================
+        //  SIMULATION MODE (OFFLINE TESTING)
+        // ==========================================
+        if (simulationMode)
+        {
+            switch (category)
+            {
+                case BrainDataCategory.PerformanceMetrics:
+                    if (query == "attention") return simAttention;
+                    if (query == "relaxation") return simRelaxation;
+                    if (query == "stress") return simStress;
+                    break;
+
+                case BrainDataCategory.FacialExpressions:
+                    if (query == "blink") return simBlink;
+                    if (query == "smile") return simSmile;
+                    if (query == "clench") return simClench;
+                    if (query == "surprise") return simSurprise;
+                    if (query == "frown") return simFrown;
+                    break;
+
+                case BrainDataCategory.MentalCommands:
+                    if (query == "push") return simPush;
+                    if (query == "pull") return simPull;
+                    if (query == "lift") return simLift;
+                    if (query == "drop") return simDrop;
+                    if (query == "left") return simLeft;
+                    if (query == "right") return simRight;
+                    if (query == "up") return simUp;
+                    if (query == "down") return simDown;
+                    break;
+
+                case BrainDataCategory.BandPower:
+                    if (query == "alpha") return simAlpha;
+                    if (query == "theta") return simTheta;
+                    if (query == "beta") return simBeta;
+                    if (query == "delta") return simDelta;
+                    break;
+            }
+            return 0f;
+        }
+
+        // ==========================================
+        //  REAL HEADSET MODE
+        // ==========================================
         var itf = EmotivUnityItf.Instance;
         if (itf == null || !itf.IsSessionCreated) return 0f;
-
-        string query = signalName.ToLower();
 
         switch (category)
         {
             case BrainDataCategory.PerformanceMetrics:
-                // Emotional metrics (Usually returns a float between 0.0 and 1.0)
                 if (query == "relaxation") return _latestRelaxation;
                 if (query == "attention") return _latestFocus;
                 if (query == "stress") return _latestStress;
                 return (float)itf.GetPMData(query);
 
             case BrainDataCategory.FacialExpressions:
-                // Facial movements (Returns 1 for instant actions like blinks, or 0.0 to 1.0 for smiles)
                 if (query == "blink") return (itf.curEyeAct == "blink" ? 1f : 0f);
                 if (query == "smile") return (itf.curLAct == "smile" ? (float)itf.curLPow : 0f);
                 if (query == "clench") return (itf.curLAct == "clench" ? (float)itf.curLPow : 0f);
@@ -60,14 +128,12 @@ public class NeuroDataManager : MonoBehaviour
                 break;
 
             case BrainDataCategory.MentalCommands:
-                // Conscious thoughts trained by the player (Returns 0.0 to 1.0)
                 string act = itf.LatestMentalCommand.act;
                 float pow = (float)itf.LatestMentalCommand.pow;
                 if (act == query) return pow;
                 break;
 
             case BrainDataCategory.BandPower:
-                // Raw brainwave frequencies (Returns higher dynamic numbers, often > 50 or 100)
                 if (query == "theta") return _latestTheta;
                 if (query == "alpha") return _latestAlpha;
                 if (query == "beta") return _latestHighBeta;
@@ -75,15 +141,11 @@ public class NeuroDataManager : MonoBehaviour
                 break;
         }
 
-        return 0f; // Default fallback
+        return 0f;
     }
-
-    // --- BACKGROUND WORKERS ---
-    // These methods continuously catch the raw data arrays from the headset in the background.
 
     private void OnRawPerformanceDataReceived(object sender, ArrayList data)
     {
-        // Extracting emotional data from specific array slots
         if (data != null && data.Count >= 14)
         {
             _latestStress = System.Convert.ToSingle(data[6]);
@@ -94,7 +156,6 @@ public class NeuroDataManager : MonoBehaviour
 
     private void OnRawBandPowerReceived(object sender, ArrayList data)
     {
-        // Extracting raw frequency waves (Theta, Alpha, Beta)
         if (data != null && data.Count >= 5)
         {
             _latestTheta = System.Convert.ToSingle(data[1]);
