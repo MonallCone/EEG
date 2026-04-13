@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Inspectable : MonoBehaviour
@@ -6,7 +7,7 @@ public class Inspectable : MonoBehaviour
     private Quaternion originalRotation;
     private Transform originalParent;
 
-    private bool isInspecting = false;
+    public bool isInspecting = false;
 
     public Transform inspectPoint;
 

@@ -6,24 +6,28 @@ public class UriGellerMovement : MonoBehaviour
 {
     public Transform player;
 
-    [Header("Wandering")]
-    public float wanderRadius = 10f;
-    public float wanderDelay = 3f;
-
     [Header("Vision")]
-    public float visionDistance = 10f;
+    public float visionDistance = 50f;
     public float fov = 90f;
 
-    private NavMeshAgent agent;
-    private float wanderTimer;
+    [Header("Patrol Paths")]
+    public Transform[] pathA;
+    public Transform[] pathB;
+    public Transform[] pathC;
+    public Transform[] pathD;
 
-    private enum State {Wander, Chase}
-    private State currentState = State.Wander;
+    private Transform[] currentPath;
+    private int currentPathIndex = 0;
+
+    private NavMeshAgent agent;
+
+    private enum State {Chase, Patrol}
+    private State currentState = State.Patrol;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        wanderTimer = wanderDelay;
+        currentPath = pathA;
     }
 
     void Update()
@@ -32,16 +36,19 @@ public class UriGellerMovement : MonoBehaviour
         {
             currentState = State.Chase;
         }
-        else if(currentState == State.Chase)
+        else if (currentState == State.Chase)
         {
-            currentState = State.Wander;
+            // Lost player → go back to patrol
+            currentState = State.Patrol;
+
+            currentPath = getNearestPath();
+            currentPathIndex = getNearestPointIndex(currentPath);
         }
 
-                // Run behaviour
         switch (currentState)
         {
-            case State.Wander:
-                Wander();
+            case State.Patrol:
+                Patrol();
                 break;
 
             case State.Chase:
@@ -50,15 +57,16 @@ public class UriGellerMovement : MonoBehaviour
         }
     }
 
-    void Wander()
+    void Patrol()
     {
-        wanderTimer += Time.deltaTime;
+        if (currentPath == null || currentPath.Length == 0) return;
 
-        if(wanderTimer >= wanderDelay)
+        agent.SetDestination(currentPath[currentPathIndex].position);
+
+        // Check if agent reached destination properly
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
-            Vector3 newPos = getRandomPoint(transform.position, wanderRadius);
-            agent.SetDestination(newPos);
-            wanderTimer = 0;
+            currentPathIndex = (currentPathIndex + 1) % currentPath.Length;
         }
     }
 
@@ -91,14 +99,46 @@ public class UriGellerMovement : MonoBehaviour
         return false;
     }
 
-    Vector3 getRandomPoint(Vector3 position, float radius)
+    Transform[] getNearestPath()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * radius;
-        randomDirection += position;
+        Transform[][] allPaths = new Transform[][] {pathA, pathB, pathC, pathD};
 
-        NavMeshHit hit;
-        NavMesh.SamplePosition(randomDirection, out hit, radius, NavMesh.AllAreas);
+        Transform[] nearestPath = pathA;
+        float shortestDistance = Mathf.Infinity;
 
-        return hit.position;
+        foreach(Transform[] path in allPaths)
+        {
+            foreach (Transform point in path)
+            {
+                float distance = Vector3.Distance(transform.position, point.position);
+
+                if(distance < shortestDistance)
+                {
+                    shortestDistance = distance;
+                    nearestPath = path;
+                }
+            }
+        }
+
+        return nearestPath;
+    }
+
+    int getNearestPointIndex(Transform[] path)
+    {
+        int nearestIndex = 0;
+        float shortestDistance = Mathf.Infinity;
+
+        for (int i = 0; i < path.Length; i++)
+        {
+            float distance = Vector3.Distance(transform.position, path[i].position);
+
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                nearestIndex = i;
+            }
+        }
+
+        return nearestIndex;
     }
 }

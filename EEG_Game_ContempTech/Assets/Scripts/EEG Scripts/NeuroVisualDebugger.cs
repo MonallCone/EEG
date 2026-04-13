@@ -28,6 +28,9 @@ public class NeuroVisualDebugger : MonoBehaviour
     [Tooltip("Beta: Active thinking / Problem solving state.")]
     public Slider betaSlider;
 
+    [Tooltip("Stress")]
+    public Slider stressSlider;
+
     [Header("--- 3. VISUAL SETTINGS (Game Feel) ---")]
     [Range(1f, 30f)]
     [Tooltip("Controls UI responsiveness. Higher = snappy and accurate but jittery. Lower = smooth and organic.")]
@@ -46,6 +49,7 @@ public class NeuroVisualDebugger : MonoBehaviour
         float theta = dataManager.GetValueFromBypass(BrainDataCategory.BandPower, "theta");
         float alpha = dataManager.GetValueFromBypass(BrainDataCategory.BandPower, "alpha");
         float beta = dataManager.GetValueFromBypass(BrainDataCategory.BandPower, "beta");
+        float stress = dataManager.GetValueFromBypass(BrainDataCategory.PerformanceMetrics, "stress");
 
         // 2. THE X-RAY SYSTEM (Designer Calibration Tool)
         // Prints the raw numbers to the Unity Console every 1 second.
@@ -63,5 +67,6 @@ public class NeuroVisualDebugger : MonoBehaviour
         if (thetaSlider != null) thetaSlider.value = Mathf.Lerp(thetaSlider.value, theta, Time.deltaTime * uiSmoothing);
         if (alphaSlider != null) alphaSlider.value = Mathf.Lerp(alphaSlider.value, alpha, Time.deltaTime * uiSmoothing);
         if (betaSlider != null) betaSlider.value = Mathf.Lerp(betaSlider.value, beta, Time.deltaTime * uiSmoothing);
+        if (stressSlider != null) stressSlider.value = Mathf.Lerp(stressSlider.value, stress*100, Time.deltaTime * uiSmoothing);
     }
 }
