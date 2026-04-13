@@ -16692,8 +16692,8 @@ MonoBehaviour:
   threshold: 0.5
   targetTransform: {fileID: 1535882675}
   mode: 1
-  x: 1
-  y: 1
+  x: 0
+  y: 0
   z: 1
   smoothSpeed: 10.04
   enableSpawning: 0

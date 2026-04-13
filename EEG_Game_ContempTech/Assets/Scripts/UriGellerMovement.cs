@@ -38,7 +38,6 @@ public class UriGellerMovement : MonoBehaviour
         }
         else if (currentState == State.Chase)
         {
-            // Lost player → go back to patrol
             currentState = State.Patrol;
 
             currentPath = getNearestPath();
