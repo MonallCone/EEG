@@ -1,4 +1,4 @@
-﻿/*using UnityEngine;
+﻿using UnityEngine;
 using LSL;
 
 /// <summary>
@@ -69,4 +69,4 @@ public class BCIReader : MonoBehaviour
             }
         }
     }
-}*/
+}
