@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 
 // Creates a custom Unity Event that can pass a float value (the brain data) to other components.
@@ -145,10 +146,30 @@ public class NeuroObjectMapper : MonoBehaviour
                             (mode == MappingMode.Position) ? targetTransform.localPosition :
                             targetTransform.localEulerAngles;
 
-            if(mode == MappingMode.Animation && inspect.isInspecting)
+            if(mode == MappingMode.Animation)
             {
-                anim = GetComponent<Animator>();
-                anim.Play("TEST_DELETE", -1, current.x);
+                val = Mathf.Clamp01(val);
+
+                float maxBend = 60f;
+                float bend = Mathf.Sin(Time.unscaledTime * 2f) * 5f + val * maxBend;
+
+                // Base rotation (Z = 90 degrees for inspect view)
+                Quaternion baseRotation = Quaternion.Euler(0f, 90f, 180f);
+
+                // Add bending on X axis
+                Quaternion bendRotation = Quaternion.Euler(bend, 0f, 0f);
+
+                // Combine rotations
+                Quaternion targetRotation = baseRotation * bendRotation;
+
+                // Smooth movement (use unscaled time)
+                targetTransform.localRotation = Quaternion.Lerp(
+                    targetTransform.localRotation,
+                    targetRotation,
+                    Time.unscaledDeltaTime * smoothSpeed
+                );
+
+                return;
             }
             else{
                 // Interpolate (Lerp) towards the new value for smooth, organic visual feedback
