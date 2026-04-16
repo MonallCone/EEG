@@ -24,6 +24,10 @@ public class UriGellerMovement : MonoBehaviour
     private enum State {Chase, Patrol}
     private State currentState = State.Patrol;
 
+    public CameraShake cameraShake;
+    public float maxShakeDistance = 10f;
+    public float minShakeDistance = 2f; 
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -53,6 +57,20 @@ public class UriGellerMovement : MonoBehaviour
             case State.Chase:
                 Chase();
                 break;
+        }
+
+        if (currentState == State.Chase)
+        {
+            float distance = Vector3.Distance(transform.position, player.position);
+
+            float t = Mathf.InverseLerp(maxShakeDistance, minShakeDistance, distance);
+            float intensity = Mathf.Lerp(0f, 0.25f, t);
+
+            cameraShake.SetIntensity(intensity);
+        }
+        else
+        {
+            cameraShake.SetIntensity(0f);
         }
     }
 
