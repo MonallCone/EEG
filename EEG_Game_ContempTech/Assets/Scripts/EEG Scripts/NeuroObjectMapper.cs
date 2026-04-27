@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 
 // Creates a custom Unity Event that can pass a float value (the brain data) to other components.
@@ -48,7 +49,7 @@ public class NeuroObjectMapper : MonoBehaviour
     [Header("--- 4. TRANSFORM MAPPING (Movement) ---")]
     [Tooltip("The object you want to move/scale/rotate. Usually this same GameObject.")]
     public Transform targetTransform;
-    public enum MappingMode { None, Scale, Position, Rotation }
+    public enum MappingMode { None, Scale, Position, Rotation, Animation }
     public MappingMode mode = MappingMode.None;
     public bool x, y, z;
 
@@ -68,6 +69,10 @@ public class NeuroObjectMapper : MonoBehaviour
     [Header("--- 6. UNITY EVENT (The Magic Port) ---")]
     [Tooltip("Link the brain signal to ANY component here (e.g., Light intensity, Audio volume, UI Sliders).")]
     public NeuroFloatEvent onUpdate;
+
+    public Inspectable inspect;
+
+    private Animator anim;
 
     void Update()
     {
@@ -135,19 +140,48 @@ public class NeuroObjectMapper : MonoBehaviour
      */
     private void ProcessTransformMapping(float val)
     {
-        // Get the current state of the object
-        Vector3 current = (mode == MappingMode.Scale) ? targetTransform.localScale :
-                         (mode == MappingMode.Position) ? targetTransform.localPosition :
-                          targetTransform.localEulerAngles;
+        if(inspect.isInspecting){
+            // Get the current state of the object
+            Vector3 current = (mode == MappingMode.Scale) ? targetTransform.localScale :
+                            (mode == MappingMode.Position) ? targetTransform.localPosition :
+                            targetTransform.localEulerAngles;
 
-        // Interpolate (Lerp) towards the new value for smooth, organic visual feedback
-        if (x) current.x = Mathf.Lerp(current.x, val, Time.deltaTime * smoothSpeed);
-        if (y) current.y = Mathf.Lerp(current.y, val, Time.deltaTime * smoothSpeed);
-        if (z) current.z = Mathf.Lerp(current.z, val, Time.deltaTime * smoothSpeed);
+            if(mode == MappingMode.Animation)
+            {
+                val = Mathf.Clamp01(val);
 
-        // Apply the newly calculated Vector3 back to the object
-        if (mode == MappingMode.Scale) targetTransform.localScale = current;
-        else if (mode == MappingMode.Position) targetTransform.localPosition = current;
-        else if (mode == MappingMode.Rotation) targetTransform.localEulerAngles = current;
+                float maxBend = 60f;
+                float bend = Mathf.Sin(Time.unscaledTime * 2f) * 5f + val * maxBend;
+
+                // Base rotation (Z = 90 degrees for inspect view)
+                Quaternion baseRotation = Quaternion.Euler(0f, 90f, 180f);
+
+                // Add bending on X axis
+                Quaternion bendRotation = Quaternion.Euler(bend, 0f, 0f);
+
+                // Combine rotations
+                Quaternion targetRotation = baseRotation * bendRotation;
+
+                // Smooth movement (use unscaled time)
+                targetTransform.localRotation = Quaternion.Lerp(
+                    targetTransform.localRotation,
+                    targetRotation,
+                    Time.unscaledDeltaTime * smoothSpeed
+                );
+
+                return;
+            }
+            else{
+                // Interpolate (Lerp) towards the new value for smooth, organic visual feedback
+                if (x) current.x = Mathf.Lerp(current.x, val, Time.deltaTime * smoothSpeed);
+                if (y) current.y = Mathf.Lerp(current.y, val, Time.deltaTime * smoothSpeed);
+                if (z) current.z = Mathf.Lerp(current.z, val, Time.deltaTime * smoothSpeed);
+
+                // Apply the newly calculated Vector3 back to the object
+                if (mode == MappingMode.Scale) targetTransform.localScale = current;
+                else if (mode == MappingMode.Position) targetTransform.localPosition = current;
+                else if (mode == MappingMode.Rotation) targetTransform.localEulerAngles = current;
+            }
+        }
     }
 }
